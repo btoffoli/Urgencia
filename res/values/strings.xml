@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Bem Vindo ao Emergência 1.0</string>
+    <string name="app_name">Urgência 1.0</string>
+
+    <!-- Resources of main acitivity -->
+    <string name="mainBtnHelp">Emergência</string>
+    <string name="mainBtnExit">Sair</string>
+
+    <!-- Resources of help acitivity -->
+    <string name="helpClaimantName">Nome:</string>
+    <string name="helpListOfKindsEvent">Natureza:</string>
+    <string name="helpDescription">Descrição:</string>
+
+</resources>
