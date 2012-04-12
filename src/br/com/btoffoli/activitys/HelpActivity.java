@@ -122,14 +122,14 @@ public class HelpActivity extends Activity {
 						// }
 						// //Location location =
 						// locationManager.getLastKnownLocation(provider);
-						while (activityLocation == null) {
-							try {
-									Thread.sleep(2000l);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
+//						while (activityLocation == null) {
+//							try {
+//									Thread.sleep(2000l);
+//							} catch (InterruptedException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
+//						}
 //						if (activityLocation != null) {
 //							status = new NetService()
 //									.enviarOcorrencia(activityLocation);
