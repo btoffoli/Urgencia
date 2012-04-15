@@ -43,32 +43,9 @@ public class MainActivity extends Activity implements OnClickListener{
 
 		final Button btnExit = (Button) findViewById(R.id.btnExit);
 		btnExit.setOnClickListener(this);		
-//		btnExit.setOnClickListener(new View.OnClickListener() {
-//
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//				finish();
-//
-//			}
-//		});
-//
-//		final Button btnHelp = (Button) findViewById(R.id.btnHelp);
+
 		final Button btnHelp = (Button) findViewById(R.id.btnHelp);
 		btnHelp.setOnClickListener(this);
-
-//		btnHelp.setOnClickListener(new View.OnClickListener() {
-//
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//				Intent i = new Intent(v.getContext(), HelpActivity.class);
-//				startActivity(i);
-//
-//			}
-//		});
-
-		// startActivity(new Intent(Intent.ACTION_AIRPLANE_MODE_CHANGED));
-		// Intent i = new Intent(this, WelcomeActivity.class);
-		// startActivity(i);
 	}
 
 	@Override
@@ -93,7 +70,7 @@ public class MainActivity extends Activity implements OnClickListener{
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == CONTACT_REQUEST) {
 			if (resultCode == RESULT_OK) {
-				// fazer alguma coisa...
+				//TODO fazer alguma coisa...
 			}
 		}
 

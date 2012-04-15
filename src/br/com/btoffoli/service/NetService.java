@@ -13,7 +13,7 @@ import android.location.Location;
 
 public class NetService {
 	public Boolean enviarOcorrencia(Location location) throws IOException {
-		Boolean result = null;
+		Boolean result = false;
 		
 		System.out.println("Location = " + location);
 		
@@ -34,8 +34,7 @@ public class NetService {
 			result = true;			
 		}catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
-			result = false;
+			e.printStackTrace();			
 		} finally {
 			urlConnection.disconnect();
 			return result;
