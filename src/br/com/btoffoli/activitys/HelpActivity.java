@@ -124,11 +124,11 @@ public class HelpActivity extends Activity {
 				lm.removeUpdates(this);
 				activityLocation = location;
 				try {
-					new NetService().enviarOcorrencia(location);										
-					synchronized (this) {
+					new NetService().enviarOcorrencia(location);
 						status = true;
-						this.notify();						
-					}
+						synchronized (lm) {
+							lm.notify();
+						}												
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -140,9 +140,7 @@ public class HelpActivity extends Activity {
 		// if (gps_enabled)
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 50,
 				locListener);
-		//synchronized (locListener) {
-			locListener.wait();
-		//}
+		lm.wait();
 		
 		showDialog(status ? 1 : 0);
 
