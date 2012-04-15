@@ -38,4 +38,7 @@ public class CheckNetWork {
 		    }
 		    return false;
 	}
+	
+	
+	
 }

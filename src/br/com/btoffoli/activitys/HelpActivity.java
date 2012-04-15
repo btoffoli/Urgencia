@@ -44,101 +44,7 @@ public class HelpActivity extends Activity {
 
 				public void onClick(View v) {
 					try {
-						/* tenta obter a posição do celular */
-						lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-						// Criteria crit = new Criteria();
-						// String provider =
-						// locationManager.getBestProvider(crit, true);
-						// crit.setAccuracy(Criteria.ACCURACY_FINE);
-
-						if (lm == null)
-							lm = (LocationManager) v.getContext()
-									.getSystemService(Context.LOCATION_SERVICE);
-
-						// exceptions will be thrown if provider is not
-						// permitted.
-						try {
-							gps_enabled = lm
-									.isProviderEnabled(LocationManager.GPS_PROVIDER);
-						} catch (Exception ex) {
-						}
-						try {
-							network_enabled = lm
-									.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-						} catch (Exception ex) {
-						}
-
-						System.out.println("gps_enabled = " + gps_enabled);
-						// don't start listeners if no provider is enabled
-						if (!gps_enabled && !network_enabled)
-							return;
-
-						LocationListener locListener = new LocationListener() {
-
-							public void onStatusChanged(String provider,
-									int status, Bundle extras) {
-								// TODO Auto-generated method stub
-								System.out
-										.println("Obtendo posição do provider "
-												+ provider);
-							}
-
-							public void onProviderEnabled(String provider) {
-								// TODO Auto-generated method stub
-
-							}
-
-							public void onProviderDisabled(String provider) {
-								// TODO Auto-generated method stub
-
-							}
-
-							public void onLocationChanged(Location location) {
-								// TODO Auto-generated method stub
-								activityLocation = location;
-								try {
-									new NetService().enviarOcorrencia(location);
-								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-
-							}
-						};
-
-						//if (gps_enabled)
-							lm.requestLocationUpdates(
-									LocationManager.GPS_PROVIDER, 3000, 50,
-									locListener);
-						//if (network_enabled)
-//							lm.requestLocationUpdates(
-//									LocationManager.NETWORK_PROVIDER, 0, 0,
-//									locListener);
-
-						// TODO Bloquear e aguardar por posição....
-
-						// if (activityLocation == null){
-						// activityLocation = lm.getLastKnownLocation(provider);
-						// }
-						// //Location location =
-						// locationManager.getLastKnownLocation(provider);
-//						while (activityLocation == null) {
-//							try {
-//									Thread.sleep(2000l);
-//							} catch (InterruptedException e) {
-//								// TODO Auto-generated catch block
-//								e.printStackTrace();
-//							}
-//						}
-//						if (activityLocation != null) {
-//							status = new NetService()
-//									.enviarOcorrencia(activityLocation);
-//						} else {
-//							status = false;
-//						}
-
-						showDialog(status ? 1 : 0);
-
+						enviar();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -172,6 +78,73 @@ public class HelpActivity extends Activity {
 					}
 				});
 		return builder.create();
+
+	}
+
+	private void enviar() throws InterruptedException {
+		/* tenta obter a posição do celular */
+		lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		try {
+			gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		} catch (Exception ex) {
+
+		}
+		try {
+			network_enabled = lm
+					.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+		} catch (Exception ex) {
+
+		}
+
+		System.out.println("gps_enabled = " + gps_enabled);
+		// don't start listeners if no provider is enabled
+		if (!gps_enabled && !network_enabled)
+			return;
+
+		LocationListener locListener = new LocationListener() {
+
+			public void onStatusChanged(String provider, int status,
+					Bundle extras) {
+				// TODO Auto-generated method stub
+				System.out.println("Obtendo posição do provider " + provider);
+			}
+
+			public void onProviderEnabled(String provider) {
+				// TODO Auto-generated method stub
+
+			}
+
+			public void onProviderDisabled(String provider) {
+				// TODO Auto-generated method stub
+
+			}
+
+			public void onLocationChanged(Location location) {
+				// TODO Auto-generated method stub
+				lm.removeUpdates(this);
+				activityLocation = location;
+				try {
+					new NetService().enviarOcorrencia(location);										
+					synchronized (this) {
+						status = true;
+						this.notify();						
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		};
+
+		// if (gps_enabled)
+		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 50,
+				locListener);
+		//synchronized (locListener) {
+			locListener.wait();
+		//}
+		
+		showDialog(status ? 1 : 0);
 
 	}
 

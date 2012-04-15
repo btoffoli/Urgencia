@@ -1,0 +1,11 @@
+Brainstorm da Aplicação
+Trata-se de uma aplicação em que o usuário terá algumas formas de se integrar a um sistema de despacho de forças emergênciais:
+	A primeira forma pensada é o usuário de frente ao evento poder enviar ao sistema de despacho informações sobre o mesmo, tais como natureza, informações sobre envolvidos e é claro informações sobre sua localização
+		Risco -> P/ o sucesso desta forma seria necessário recursos como internet e gps. É claro que poderia haver indisponibilidade de um, ou até mesmo os dois dos recursos. 
+			No caso de falta de internet e sucesso no gps tentar enviar informações do evento por SMS. 
+			
+			No caso de sucesso com a internet mas sem posição válida de gps, ver o que fazer...
+			No caso de falha dos dois discar 190, ou de acordo com a natureza disca p/ a força específica.
+
+
+	

@@ -1,4 +1,4 @@
-package br.com.btoffoli.model;
+package br.com.btoffoli.controllers;
 
 public class Event {
 	private String claimant;
