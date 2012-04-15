@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -63,20 +64,43 @@ public class HelpActivity extends Activity {
 	protected Dialog onCreateDialog(int id) {
 		// TODO Auto-generated method stub
 		// return super.onCreateDialog(id);
-		String msg = id > 0 ? "Ocorrência enviada com sucesso."
-				: "Falha no envio da ocorrência.";
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Status de envio da ocorrência.").setMessage(msg)
-				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						// when the user clicks the OK button
-						// do something
-						dialog.dismiss();
-						if (id > 0)
-							finish();
-					}
-				});
+		if (id == 0) {
+			String msg = status ? "Ocorrência enviada com sucesso."
+					: "Falha no envio da ocorrência.";
+			
+			builder.setTitle("Status de envio da ocorrência.")
+					.setMessage(msg)
+					.setPositiveButton("OK",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									// when the user clicks the OK button
+									// do something
+									dialog.dismiss();									
+									if (id > 0)
+										finish();
+								}
+							});
+		} else if (id == 1) {
+			String msg = "Tentando enviar Ocorrência";
+			builder.setTitle("Envio da ocorrência.")
+					.setMessage(msg)
+					.setNegativeButton("Cancelar",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									// when the user clicks the OK button
+									// do something
+									dialog.dismiss();
+									// TODO fazer algo melhor do que parar a
+									// activity
+									//finish();
+								}
+							});
+
+		}		
 		return builder.create();
 
 	}
@@ -124,13 +148,15 @@ public class HelpActivity extends Activity {
 				lm.removeUpdates(this);
 				activityLocation = location;
 				try {
-					new NetService().enviarOcorrencia(location);
-						status = true;
-						synchronized (lm) {
-							lm.notify();
-						}												
+					status = new NetService().enviarOcorrencia(location);
+					liberarTela();
+					showDialog(0);
+//					synchronized (lm) {
+//						lm.notify();
+//					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					status = false;
 					e.printStackTrace();
 				}
 
@@ -140,10 +166,19 @@ public class HelpActivity extends Activity {
 		// if (gps_enabled)
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 50,
 				locListener);
-		lm.wait();
-		
-		showDialog(status ? 1 : 0);
+		//lm.wait();
 
+		travarTela();
+
+	}
+
+	private void travarTela() {
+		showDialog(1);
+
+	}
+	
+	private void liberarTela(){
+		dismissDialog(1);
 	}
 
 }
