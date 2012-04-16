@@ -7,8 +7,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import org.apache.http.client.utils.URLEncodedUtils;
-
 import android.location.Location;
 
 public class NetService {
@@ -26,6 +24,7 @@ public class NetService {
 		URL url = new URL(urlString);
 
 		HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+		
 		try {
 			InputStream in = new BufferedInputStream(
 					urlConnection.getInputStream());
@@ -41,23 +40,3 @@ public class NetService {
 		}
 	}
 }
-
-// URL url = new URL(urlString);
-// HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-// try {
-// urlConnection.setDoOutput(true);
-// urlConnection.setChunkedStreamingMode(0);
-//
-// // OutputStream out = new
-// // BufferedOutputStream(urlConnection.getOutputStream());
-// // writeStream(out);
-//
-// InputStream in = new BufferedInputStream(
-// urlConnection.getInputStream());
-// System.out.println(in.toString());
-// // readStream(in);
-// } finally {
-// urlConnection.disconnect();
-// }
-// }
-// }

@@ -9,14 +9,18 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Criteria;
+import android.location.GpsStatus.Listener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.Toast;
 import br.com.btoffoli.R;
+import br.com.btoffoli.model.Ocorrencia;
 import br.com.btoffoli.service.NetService;
 
 public class HelpActivity extends Activity {
@@ -31,10 +35,21 @@ public class HelpActivity extends Activity {
 
 	Boolean status = false;
 
+	Ocorrencia ocorrencia;
+
+	Thread currentSenderJob;
+
+	Thread currentThreadOnChangeLocation;
+
+	Boolean pararSenderJob = false;
+
+	LocationListener locListener;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		try {
+			ocorrencia = new Ocorrencia();
 			super.onCreate(savedInstanceState);
 
 			setContentView(R.layout.help);
@@ -45,7 +60,24 @@ public class HelpActivity extends Activity {
 
 				public void onClick(View v) {
 					try {
-						enviar();
+
+						currentSenderJob = new Thread(new Runnable() {
+							public void run() {
+								try {
+									enviar();
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						});
+
+						pararSenderJob = false;
+						currentSenderJob.setName("currentSenderJob");
+						currentSenderJob.setDaemon(true);
+						if (!pararSenderJob)
+							currentSenderJob.run();
+
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -69,7 +101,7 @@ public class HelpActivity extends Activity {
 		if (id == 0) {
 			String msg = status ? "Ocorrência enviada com sucesso."
 					: "Falha no envio da ocorrência.";
-			
+
 			builder.setTitle("Status de envio da ocorrência.")
 					.setMessage(msg)
 					.setPositiveButton("OK",
@@ -78,7 +110,7 @@ public class HelpActivity extends Activity {
 										int id) {
 									// when the user clicks the OK button
 									// do something
-									dialog.dismiss();									
+									dialog.dismiss();
 									if (id > 0)
 										finish();
 								}
@@ -91,16 +123,12 @@ public class HelpActivity extends Activity {
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
 										int id) {
-									// when the user clicks the OK button
-									// do something
 									dialog.dismiss();
-									// TODO fazer algo melhor do que parar a
-									// activity
-									//finish();
+									pararTrabalhoEnvio();
 								}
 							});
 
-		}		
+		}
 		return builder.create();
 
 	}
@@ -125,7 +153,7 @@ public class HelpActivity extends Activity {
 		if (!gps_enabled && !network_enabled)
 			return;
 
-		LocationListener locListener = new LocationListener() {
+		locListener = new LocationListener() {
 
 			public void onStatusChanged(String provider, int status,
 					Bundle extras) {
@@ -143,30 +171,38 @@ public class HelpActivity extends Activity {
 
 			}
 
-			public void onLocationChanged(Location location) {
+			public void onLocationChanged(final Location location) {
 				// TODO Auto-generated method stub
 				lm.removeUpdates(this);
-				activityLocation = location;
-				try {
-					status = new NetService().enviarOcorrencia(location);
-					liberarTela();
-					showDialog(0);
-//					synchronized (lm) {
-//						lm.notify();
-//					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					status = false;
-					e.printStackTrace();
-				}
+				if (!pararSenderJob) {
+					currentThreadOnChangeLocation = new Thread(new Runnable() {
+						public void run() {
+							activityLocation = location;
+							try {
+								status = new NetService()
+										.enviarOcorrencia(location);
+							} catch (IOException e) {
+								status = false;
+								e.printStackTrace();
+							} finally {
+								liberarTela();
+								showDialog(0);
+							}
+						}
+					});
+					currentThreadOnChangeLocation.setDaemon(true);
+					currentThreadOnChangeLocation
+							.setName("HandlerLocationThread");
+					currentThreadOnChangeLocation.run();
 
+				}
 			}
 		};
-
+		
 		// if (gps_enabled)
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 50,
 				locListener);
-		//lm.wait();
+		// lm.wait();
 
 		travarTela();
 
@@ -176,9 +212,33 @@ public class HelpActivity extends Activity {
 		showDialog(1);
 
 	}
-	
-	private void liberarTela(){
+
+	private void liberarTela() {
 		dismissDialog(1);
+	}
+
+	private void pararTrabalhoEnvio() {
+
+		pararSenderJob = true;
+		
+		lm.removeUpdates(locListener);
+
+		if (currentSenderJob != null && currentSenderJob.isAlive()) {
+
+			currentSenderJob.interrupt();
+			currentSenderJob = null;
+		}
+
+		
+
+		if (currentThreadOnChangeLocation != null
+				&& currentThreadOnChangeLocation.isAlive()) {
+
+			currentThreadOnChangeLocation.interrupt();
+			currentThreadOnChangeLocation = null;
+		}
+
+		showDialog(0);
 	}
 
 }
