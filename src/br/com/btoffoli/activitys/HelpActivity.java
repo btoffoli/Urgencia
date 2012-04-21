@@ -18,17 +18,18 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Toast;
 import br.com.btoffoli.R;
 import br.com.btoffoli.model.Ocorrencia;
 import br.com.btoffoli.service.NetService;
+import br.com.btoffoli.service.TelefoniaService;
 
 public class HelpActivity extends Activity {
 
 	LocationManager lm = null;
-
-	Location activityLocation = null;
-
+	
 	Boolean gps_enabled = false;
 
 	Boolean network_enabled = false;
@@ -111,8 +112,7 @@ public class HelpActivity extends Activity {
 									// when the user clicks the OK button
 									// do something
 									dialog.dismiss();
-									if (id > 0)
-										finish();
+									//finish();
 								}
 							});
 		} else if (id == 1) {
@@ -148,10 +148,10 @@ public class HelpActivity extends Activity {
 
 		}
 
-		System.out.println("gps_enabled = " + gps_enabled);
-		// don't start listeners if no provider is enabled
-		if (!gps_enabled && !network_enabled)
+		if (!gps_enabled && !network_enabled){
+			exibitMensagemTerminoStatusEnvio();
 			return;
+		}
 
 		locListener = new LocationListener() {
 
@@ -177,16 +177,17 @@ public class HelpActivity extends Activity {
 				if (!pararSenderJob) {
 					currentThreadOnChangeLocation = new Thread(new Runnable() {
 						public void run() {
-							activityLocation = location;
 							try {
+								Ocorrencia o = capturarParametros();
+								o.setLocalizacao(location);
 								status = new NetService()
-										.enviarOcorrencia(location);
-							} catch (IOException e) {
+										.enviarOcorrencia(o);
+							} catch (Exception e) {
 								status = false;
 								e.printStackTrace();
 							} finally {
 								liberarTela();
-								showDialog(0);
+								exibitMensagemTerminoStatusEnvio();
 							}
 						}
 					});
@@ -238,7 +239,22 @@ public class HelpActivity extends Activity {
 			currentThreadOnChangeLocation = null;
 		}
 
+		exibitMensagemTerminoStatusEnvio();
+	}
+	
+	private void exibitMensagemTerminoStatusEnvio(){
 		showDialog(0);
 	}
+	
+	private Ocorrencia capturarParametros(){
+		Ocorrencia o = new Ocorrencia();
+		o.setSolicitante( ((EditText) findViewById(R.id.editTextSolicitante)).getText().toString() );
+		o.setNatureza( ((EditText) findViewById(R.id.editTextNatureza)).getText().toString() );
+		o.setEstaNoLocal( ((CheckBox) findViewById(R.id.checkBoxNoLocal)).isChecked() );
+		o.setContato(new TelefoniaService(this).getMyPhoneNumber());
+		
+		return o;
+	}
+	
 
 }

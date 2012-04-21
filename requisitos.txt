@@ -9,5 +9,9 @@ Trata-se de uma aplicação em que o usuário terá algumas formas de se integra
 			No caso de sucesso com a internet mas sem posição válida de gps, ver o que fazer...
 			No caso de falha dos dois discar 190, ou de acordo com a natureza disca p/ a força específica.
 
+obs: Verificar se existe outra forma de obter o telefone
+Parei no tratamento da resposta do envio da ocorrência.
+
+
 
 	

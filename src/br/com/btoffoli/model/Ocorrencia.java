@@ -1,10 +1,14 @@
 package br.com.btoffoli.model;
 
+import android.location.Location;
+
 public class Ocorrencia {
 	private String solicitante;
+	private String contato;
 	private String natureza;
-	private Boolean estaNoLocal;
-	private Boolean manterRastreamento;
+	private Boolean estaNoLocal = false;
+	private Boolean manterRastreamento = false;
+	private Location localizacao;
 
 	public String getSolicitante() {
 		return solicitante;
@@ -38,4 +42,19 @@ public class Ocorrencia {
 		this.manterRastreamento = manterRastreamento;
 	}
 
+	public Location getLocalizacao() {
+		return localizacao;
+	}
+
+	public void setLocalizacao(Location localizacao) {
+		this.localizacao = localizacao;		
+	}
+
+	public String getContato() {
+		return contato;
+	}
+
+	public void setContato(String contato) {
+		this.contato = contato;
+	}	
 }

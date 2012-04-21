@@ -10,7 +10,7 @@
         android:text="@string/helpClaimantName" />
 
     <EditText
-        android:id="@+id/editText1"
+        android:id="@+id/editTextSolicitante"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPersonName" >
@@ -25,12 +25,12 @@
         android:text="@string/helpListOfKindsEvent" />
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/editTextNatureza"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <CheckBox
-        android:id="@+id/checkBox1"
+        android:id="@+id/checkBoxNoLocal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Estou no local ou próximo" />
